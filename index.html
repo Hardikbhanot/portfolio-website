@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardik Bhanot | Creative Developer</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Fonts to simulate the modern OkayDev aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&family=Inter:wght@400;500;600&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="is-dark">
+    
+    <!-- Mode Toggle Button -->
+    <button id="mode-toggle" class="mode-toggle">
+        <span class="icon">>_</span> <span id="toggle-text">Terminal</span>
+    </button>
+
+    <!-- NORMAL VIEW (OkayDev Inspired) -->
+    <div id="normal-view" class="view-container active">
+        
+        <header class="hero animate-on-scroll">
+            <div class="hero-label">WELCOME TO MY DIGITAL SPACE</div>
+            <h1 class="hero-title">HARDIK<br>BHANOT.</h1>
+            <p class="hero-subtitle">Software Engineer.</p>
+            
+            <div class="hero-buttons">
+                <a href="#projects" class="btn-creative">View Work</a>
+                <a href="#contact" class="btn-outline">Contact</a>
+            </div>
+        </header>
+
+        <!-- Marquee -->
+        <div class="marquee-container">
+            <div class="marquee-content">
+                <span>FRONTEND DEVELOPMENT • BACKEND ARCHITECTURE • SYSTEMS ENGINEERING • OPEN SOURCE • </span>
+                <span>FRONTEND DEVELOPMENT • BACKEND ARCHITECTURE • SYSTEMS ENGINEERING • OPEN SOURCE • </span>
+                <span>FRONTEND DEVELOPMENT • BACKEND ARCHITECTURE • SYSTEMS ENGINEERING • OPEN SOURCE • </span>
+            </div>
+        </div>
+        
+        <section class="about-section animate-on-scroll" id="about">
+            <div class="about-grid">
+                <div class="about-text-col">
+                    <h2 class="section-title">ABOUT ME.</h2>
+                    <p class="lead-text">
+                        I am a software engineer dedicated to crafting elegant, high-performance web applications.
+                    </p>
+                    <p class="body-text">
+                        With a deep love for open-source and clean architecture, I thrive at the intersection of design and robust engineering. I build things that look good and run fast.
+                    </p>
+                </div>
+                
+                <div class="skills-col">
+                    <div class="label-mono">CORE ARSENAL //</div>
+                    <div class="skills-tags">
+                        <span class="tag-brutal"><i class="fab fa-js"></i> JavaScript</span>
+                        <span class="tag-brutal"><i class="fab fa-python"></i> Python</span>
+                        <span class="tag-brutal"><i class="fab fa-golang"></i> Go</span>
+                        <span class="tag-brutal"><i class="fab fa-java"></i> Java</span>
+                        <span class="tag-brutal"><i class="fab fa-react"></i> React</span>
+                        <span class="tag-brutal"><i class="fab fa-node-js"></i> Node.js</span>
+                        <span class="tag-brutal"><i class="fab fa-docker"></i> Docker</span>
+                        <span class="tag-brutal"><i class="fab fa-git-alt"></i> Git</span>
+                        <span class="tag-brutal"><i class="fas fa-database"></i> SQL</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="projects-section animate-on-scroll" id="projects">
+            <h2 class="section-title text-center">FEATURED WORK.</h2>
+            <div class="label-mono text-center mb-4">PULLED FROM GITHUB //</div>
+            
+            <div id="projects-grid" class="bento-grid">
+                <!-- Projects dynamically injected here -->
+                <div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Loading...</div>
+            </div>
+        </section>
+
+        <footer class="creative-footer animate-on-scroll" id="contact">
+            <h2 class="section-title text-center">LET'S CONNECT.</h2>
+            <p class="body-text text-center">Open for collaborations and new opportunities.</p>
+            
+            <div class="social-bento">
+                <a href="mailto:hardik.bhanot1@gmail.com" class="social-card">
+                    <i class="fas fa-envelope"></i>
+                    <span>Email</span>
+                </a>
+                <a id="github-link" href="#" target="_blank" class="social-card">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+                <a href="https://linkedin.com/in/hardik-bhanot" target="_blank" class="social-card">
+                    <i class="fab fa-linkedin-in"></i>
+                    <span>LinkedIn</span>
+                </a>
+            </div>
+            
+            <div class="copyright-mono">
+                © 2026 HARDIK BHANOT. CRAFTED WITH <span class="neon-yellow">CODE</span>.
+            </div>
+        </footer>
+    </div>
+
+    <!-- TERMINAL VIEW (Geek Mode) -->
+    <div id="terminal-view" class="view-container hidden">
+        <div class="scanlines"></div>
+        <div class="terminal-container" id="terminal-container">
+            <div id="output"></div>
+            <div class="input-line">
+                <span id="prompt" class="prompt">guest@portfolio:~$</span>
+                <input type="text" id="command-input" autocomplete="off" spellcheck="false">
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
