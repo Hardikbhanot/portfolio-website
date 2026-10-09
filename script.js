@@ -139,13 +139,7 @@ function renderNormalProjects(repos) {
         card.className = 'bento-card animate-on-scroll'; 
         card.style.transitionDelay = `${index * 0.1}s`; 
         
-        // Use a generic placeholder or dynamic image based on repo name
-        const imgSrc = `https://picsum.photos/seed/${repo.name}/600/300`;
-        
         card.innerHTML = `
-            <div class="project-media-slot">
-                <img src="${imgSrc}" alt="${repo.name} preview" loading="lazy">
-            </div>
             <div class="project-content">
                 <h3>${repo.name} ${repo.language ? `<span class="lang-badge">${repo.language}</span>` : ''}</h3>
                 <p>${repo.description || 'No description provided.'}</p>
