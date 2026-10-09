@@ -6,26 +6,39 @@
     <title>Hardik Bhanot | Creative Developer</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- Fonts to simulate the modern OkayDev aesthetic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&family=Inter:wght@400;500;600&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="is-dark">
     
-    <!-- Mode Toggle Button -->
-    <button id="mode-toggle" class="mode-toggle">
-        <span class="icon">>_</span> <span id="toggle-text">Terminal</span>
-    </button>
+    <!-- Background Grid Texture -->
+    <div class="bg-grid"></div>
+
+    <!-- Floating Glassmorphism Dock -->
+    <nav class="glass-dock" id="navbar">
+        <ul class="dock-links">
+            <li><a href="#home" class="nav-link active"><i class="fas fa-home"></i><span class="nav-text">Home</span></a></li>
+            <li><a href="#about" class="nav-link"><i class="fas fa-user"></i><span class="nav-text">About</span></a></li>
+            <li><a href="#projects" class="nav-link"><i class="fas fa-code"></i><span class="nav-text">Work</span></a></li>
+            <li><a href="#contact" class="nav-link"><i class="fas fa-paper-plane"></i><span class="nav-text">Contact</span></a></li>
+        </ul>
+        <div class="dock-divider"></div>
+        <button id="mode-toggle" class="mode-toggle">
+            <span class="icon">>_</span> <span id="toggle-text" class="nav-text">Terminal</span>
+        </button>
+    </nav>
 
     <!-- NORMAL VIEW (OkayDev Inspired) -->
     <div id="normal-view" class="view-container active">
         
-        <header class="hero animate-on-scroll">
-            <div class="hero-label">WELCOME TO MY DIGITAL SPACE</div>
+        <header class="hero animate-on-scroll" id="home">
+            <div class="status-badge">
+                <span class="pulse-dot"></span> Available for Roles
+            </div>
+            
             <h1 class="hero-title">HARDIK<br>BHANOT.</h1>
             <p class="hero-subtitle">Software Engineer.</p>
             
@@ -88,10 +101,11 @@
             <p class="body-text text-center">Open for collaborations and new opportunities.</p>
             
             <div class="social-bento">
-                <a href="mailto:hardik.bhanot1@gmail.com" class="social-card">
+                <button id="copy-email-btn" class="social-card">
                     <i class="fas fa-envelope"></i>
-                    <span>Email</span>
-                </a>
+                    <span>Copy Email</span>
+                    <div id="copy-tooltip" class="copy-tooltip">Copied!</div>
+                </button>
                 <a id="github-link" href="#" target="_blank" class="social-card">
                     <i class="fab fa-github"></i>
                     <span>GitHub</span>
@@ -111,11 +125,26 @@
     <!-- TERMINAL VIEW (Geek Mode) -->
     <div id="terminal-view" class="view-container hidden">
         <div class="scanlines"></div>
+        
+        <button id="gui-return-btn" class="gui-return-btn">
+            <i class="fas fa-desktop"></i> Return to GUI
+        </button>
+
         <div class="terminal-container" id="terminal-container">
             <div id="output"></div>
-            <div class="input-line">
-                <span id="prompt" class="prompt">guest@portfolio:~$</span>
-                <input type="text" id="command-input" autocomplete="off" spellcheck="false">
+            
+            <div class="terminal-controls">
+                <div class="suggestion-pills">
+                    <span class="cmd-pill" data-cmd="about">about</span>
+                    <span class="cmd-pill" data-cmd="projects">projects</span>
+                    <span class="cmd-pill" data-cmd="skills">skills</span>
+                    <span class="cmd-pill" data-cmd="contact">contact</span>
+                    <span class="cmd-pill" data-cmd="clear">clear</span>
+                </div>
+                <div class="input-line">
+                    <span id="prompt" class="prompt">guest@portfolio:~$</span>
+                    <input type="text" id="command-input" autocomplete="off" spellcheck="false" placeholder="Type a command or press Tab...">
+                </div>
             </div>
         </div>
     </div>

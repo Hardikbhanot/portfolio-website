@@ -2,21 +2,26 @@
 const GITHUB_USERNAME = 'hardikbhanot'; // Change this to your actual GitHub username
 const TERMINAL_USER = 'guest';
 const TERMINAL_HOST = 'portfolio';
+const EMAIL_ADDRESS = 'hardik.bhanot1@gmail.com';
 // ---------------------
 
 // DOM Elements - Toggle
 const modeToggleBtn = document.getElementById('mode-toggle');
+const guiReturnBtn = document.getElementById('gui-return-btn');
 const toggleText = document.getElementById('toggle-text');
 const normalView = document.getElementById('normal-view');
 const terminalView = document.getElementById('terminal-view');
 const githubLink = document.getElementById('github-link');
 const projectsGrid = document.getElementById('projects-grid');
+const copyEmailBtn = document.getElementById('copy-email-btn');
+const copyTooltip = document.getElementById('copy-tooltip');
 
 // DOM Elements - Terminal
 const outputDiv = document.getElementById('output');
 const commandInput = document.getElementById('command-input');
 const promptSpan = document.getElementById('prompt');
 const terminalContainer = document.getElementById('terminal-container');
+const cmdPills = document.querySelectorAll('.cmd-pill');
 
 let isGeekMode = false;
 let githubProjectsCache = null;
@@ -33,11 +38,11 @@ const observerOptions = {
     threshold: 0.15
 };
 
-const observer = new IntersectionObserver((entries, observer) => {
+const observer = new IntersectionObserver((entries, obs) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
+            obs.unobserve(entry.target);
         }
     });
 }, observerOptions);
@@ -46,28 +51,64 @@ document.querySelectorAll('.animate-on-scroll').forEach(section => {
     observer.observe(section);
 });
 
-// Toggle Logic
-modeToggleBtn.addEventListener('click', () => {
-    isGeekMode = !isGeekMode;
-    if (isGeekMode) {
-        normalView.classList.remove('active');
-        normalView.classList.add('hidden');
-        terminalView.classList.remove('hidden');
-        terminalView.classList.add('active');
-        toggleText.textContent = 'Normal';
-        
-        if (outputDiv.innerHTML === '') {
-            printLine(banner);
+// Scroll Spy for Navbar
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('header, section, footer');
+
+window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (pageYOffset >= (sectionTop - sectionHeight / 3)) {
+            current = section.getAttribute('id');
         }
-        setTimeout(() => commandInput.focus(), 100);
-    } else {
-        terminalView.classList.remove('active');
-        terminalView.classList.add('hidden');
-        normalView.classList.remove('hidden');
-        normalView.classList.add('active');
-        toggleText.textContent = 'Terminal';
-    }
+    });
+
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href').includes(current)) {
+            link.classList.add('active');
+        }
+    });
 });
+
+// Copy Email Logic
+if (copyEmailBtn) {
+    copyEmailBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(EMAIL_ADDRESS).then(() => {
+            copyTooltip.classList.add('show');
+            setTimeout(() => {
+                copyTooltip.classList.remove('show');
+            }, 2000);
+        });
+    });
+}
+
+// Toggle Logic
+function switchToTerminal() {
+    isGeekMode = true;
+    normalView.classList.remove('active');
+    normalView.classList.add('hidden');
+    terminalView.classList.remove('hidden');
+    terminalView.classList.add('active');
+    
+    if (outputDiv.innerHTML === '') {
+        printLine(banner);
+    }
+    setTimeout(() => commandInput.focus(), 100);
+}
+
+function switchToGUI() {
+    isGeekMode = false;
+    terminalView.classList.remove('active');
+    terminalView.classList.add('hidden');
+    normalView.classList.remove('hidden');
+    normalView.classList.add('active');
+}
+
+modeToggleBtn.addEventListener('click', switchToTerminal);
+guiReturnBtn.addEventListener('click', switchToGUI);
 
 // Fetch GitHub Projects
 async function fetchGitHubProjects() {
@@ -98,12 +139,20 @@ function renderNormalProjects(repos) {
         card.className = 'bento-card animate-on-scroll'; 
         card.style.transitionDelay = `${index * 0.1}s`; 
         
+        // Use a generic placeholder or dynamic image based on repo name
+        const imgSrc = `https://picsum.photos/seed/${repo.name}/600/300`;
+        
         card.innerHTML = `
-            <h3>${repo.name} ${repo.language ? `<span class="lang-badge">${repo.language}</span>` : ''}</h3>
-            <p>${repo.description || 'No description provided.'}</p>
-            <div class="card-links">
-                <a href="${repo.html_url}" target="_blank">Code</a>
-                ${repo.homepage ? `<a href="${repo.homepage}" target="_blank">Live</a>` : ''}
+            <div class="project-media-slot">
+                <img src="${imgSrc}" alt="${repo.name} preview" loading="lazy">
+            </div>
+            <div class="project-content">
+                <h3>${repo.name} ${repo.language ? `<span class="lang-badge">${repo.language}</span>` : ''}</h3>
+                <p>${repo.description || 'No description provided.'}</p>
+                <div class="card-links">
+                    <a href="${repo.html_url}" target="_blank"><i class="fab fa-github"></i> Source Code</a>
+                    ${repo.homepage ? `<a href="${repo.homepage}" target="_blank"><i class="fas fa-external-link-alt"></i> Live Demo</a>` : ''}
+                </div>
             </div>
         `;
         projectsGrid.appendChild(card);
@@ -125,23 +174,61 @@ Welcome to the Terminal Portfolio.
 Type 'help' to see available commands.
 `;
 
-terminalView.addEventListener('click', () => {
-    if (isGeekMode) {
+const availableCommands = ['help', 'about', 'skills', 'contact', 'clear', 'whoami', 'projects', 'gui', 'exit'];
+let commandHistory = [];
+let historyIndex = -1;
+
+terminalView.addEventListener('click', (e) => {
+    if (isGeekMode && e.target !== guiReturnBtn) {
         commandInput.focus();
     }
 });
 
+// Suggestion Pills
+cmdPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+        const cmd = pill.getAttribute('data-cmd');
+        commandInput.value = cmd;
+        commandInput.focus();
+    });
+});
+
+// Input handling (History & Tab Completion)
 commandInput.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
         const command = this.value.trim();
         if (command) {
             printLine(`${promptSpan.textContent} ${command}`);
+            commandHistory.push(command);
+            historyIndex = commandHistory.length;
             processCommand(command);
         } else {
             printLine(`${promptSpan.textContent}`);
         }
         this.value = '';
         scrollToBottom();
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (historyIndex > 0) {
+            historyIndex--;
+            this.value = commandHistory[historyIndex];
+        }
+    } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIndex < commandHistory.length - 1) {
+            historyIndex++;
+            this.value = commandHistory[historyIndex];
+        } else {
+            historyIndex = commandHistory.length;
+            this.value = '';
+        }
+    } else if (e.key === 'Tab') {
+        e.preventDefault();
+        const currentVal = this.value.trim().toLowerCase();
+        const match = availableCommands.find(cmd => cmd.startsWith(currentVal));
+        if (match) {
+            this.value = match;
+        }
     }
 });
 
@@ -177,7 +264,7 @@ Available commands:
   contact    - How to reach me
   clear      - Clear the terminal screen
   whoami     - Print current user
-  exit       - Return to Normal Mode
+  gui        - Return to GUI Mode
 `;
         printLine(helpText);
     },
@@ -201,7 +288,7 @@ and clean architecture, I thrive at the intersection of design and robust engine
     contact: () => {
         printHTML(`
 Reach out to me:
-Email    : <a class="term-link" href="mailto:hardik.bhanot1@gmail.com">hardik.bhanot1@gmail.com</a>
+Email    : <a class="term-link" href="mailto:${EMAIL_ADDRESS}">${EMAIL_ADDRESS}</a>
 LinkedIn : <a class="term-link" href="https://linkedin.com/in/hardik-bhanot" target="_blank">linkedin.com/in/hardik-bhanot</a>
 GitHub   : <a class="term-link" href="https://github.com/${GITHUB_USERNAME}" target="_blank">github.com/${GITHUB_USERNAME}</a>
 `);
@@ -215,12 +302,11 @@ GitHub   : <a class="term-link" href="https://github.com/${GITHUB_USERNAME}" tar
         printLine(TERMINAL_USER);
     },
 
-    exit: () => {
+    gui: () => {
         printLine('Exiting terminal mode...', 'term-highlight');
-        setTimeout(() => {
-            modeToggleBtn.click();
-        }, 500);
+        setTimeout(() => switchToGUI(), 500);
     },
+    exit: () => commands.gui(),
     
     projects: () => {
         if (!githubProjectsCache) {
