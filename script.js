@@ -88,6 +88,7 @@ if (copyEmailBtn) {
 // Toggle Logic
 function switchToTerminal() {
     isGeekMode = true;
+    document.body.classList.add('terminal-mode-active');
     normalView.classList.remove('active');
     normalView.classList.add('hidden');
     terminalView.classList.remove('hidden');
@@ -101,6 +102,7 @@ function switchToTerminal() {
 
 function switchToGUI() {
     isGeekMode = false;
+    document.body.classList.remove('terminal-mode-active');
     terminalView.classList.remove('active');
     terminalView.classList.add('hidden');
     normalView.classList.remove('hidden');
@@ -343,4 +345,127 @@ function processCommand(rawCommand) {
         printLine(`bash: ${cmd}: command not found`, 'term-error');
         printLine(`Type 'help' for a list of available commands.`);
     }
+}
+
+
+// --- ADVANCED BACKGROUND SYSTEM ---
+
+// 1. Interactive Mouse Spotlight
+const spotlight = document.getElementById('mouse-spotlight');
+let mouseX = window.innerWidth / 2;
+let mouseY = window.innerHeight / 2;
+let spotlightX = mouseX;
+let spotlightY = mouseY;
+
+window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (spotlight.style.opacity === '0' || spotlight.style.opacity === '') {
+        spotlight.style.opacity = '1';
+    }
+});
+
+function animateSpotlight() {
+    // Lerp for smooth tracking
+    spotlightX += (mouseX - spotlightX) * 0.1;
+    spotlightY += (mouseY - spotlightY) * 0.1;
+    
+    spotlight.style.setProperty('--mouse-x', `${spotlightX}px`);
+    spotlight.style.setProperty('--mouse-y', `${spotlightY}px`);
+    
+    requestAnimationFrame(animateSpotlight);
+}
+animateSpotlight();
+
+// 2. Interactive Particle Mesh
+const canvas = document.getElementById('particle-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let animationFrameId;
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    initParticles();
+}
+
+class Particle {
+    constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = (Math.random() - 0.5) * 0.5;
+        this.radius = Math.random() * 1.5 + 0.5;
+    }
+    
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        
+        // Bounce off edges
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+        
+        // Mouse interaction (slight repulsion)
+        const dx = mouseX - this.x;
+        const dy = mouseY - this.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        if (dist < 150) {
+            this.x -= (dx / dist) * 0.5;
+            this.y -= (dy / dist) * 0.5;
+        }
+    }
+    
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(167, 139, 250, 0.5)';
+        ctx.fill();
+    }
+}
+
+function initParticles() {
+    particles = [];
+    const particleCount = Math.min(window.innerWidth / 30, 50); // Scale with screen size
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+    }
+}
+
+function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist < 150) {
+                ctx.beginPath();
+                ctx.strokeStyle = `rgba(167, 139, 250, ${0.1 * (1 - dist / 150)})`;
+                ctx.lineWidth = 1;
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.stroke();
+            }
+        }
+    }
+    
+    particles.forEach(p => {
+        p.update();
+        p.draw();
+    });
+    
+    animationFrameId = requestAnimationFrame(animateParticles);
+}
+
+// Prefers reduced motion check
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+if (!prefersReducedMotion.matches) {
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    animateParticles();
 }

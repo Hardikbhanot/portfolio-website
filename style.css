@@ -37,66 +37,118 @@ body, html {
     background-color: var(--c-bg);
 }
 
-/* --- BACKGROUND GRID --- */
-.bg-grid {
+/* --- ADVANCED BACKGROUND SYSTEM --- */
+.bg-system {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
     pointer-events: none;
-    z-index: 0;
+    z-index: -10;
+    overflow: hidden;
+    background-color: var(--c-bg);
+}
+
+.bg-grid {
+    position: absolute;
+    inset: 0;
     background-image: 
         linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
     background-size: 40px 40px;
     mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
     -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+    z-index: 1;
 }
 
-/* --- AMBIENT GLOWS --- */
+.particle-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    opacity: 0.8;
+    transition: opacity 0.5s ease;
+}
+
 .ambient-glows {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: -1;
-    overflow: hidden;
-    filter: blur(80px);
-    -webkit-filter: blur(80px);
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    filter: blur(120px);
+    -webkit-filter: blur(120px);
+    transition: opacity 1s ease;
 }
 
 .glow-1, .glow-2 {
     position: absolute;
     border-radius: 50%;
-    animation: floatGlow 15s ease-in-out infinite alternate;
+    will-change: transform;
 }
 
 .glow-1 {
     width: 50vw;
     height: 50vw;
-    background: rgba(139, 92, 246, 0.15); /* Purple */
+    background: rgba(147, 51, 234, 0.15);
     top: -10%;
     left: -10%;
+    animation: floatGlow1 25s ease-in-out infinite alternate;
 }
 
 .glow-2 {
     width: 40vw;
     height: 40vw;
-    background: rgba(16, 185, 129, 0.12); /* Green */
+    background: rgba(76, 29, 149, 0.15);
     bottom: -10%;
     right: -10%;
-    animation-delay: -5s;
-    animation-duration: 20s;
+    animation: floatGlow2 18s ease-in-out infinite alternate;
 }
 
-@keyframes floatGlow {
+.mouse-spotlight {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(124, 58, 237, 0.12), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    will-change: background;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .glow-1, .glow-2 {
+        animation: none !important;
+        transform: none !important;
+    }
+}
+
+@keyframes floatGlow1 {
     0% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(5vw, -5vh) scale(1.1); }
-    66% { transform: translate(-3vw, 4vh) scale(0.9); }
-    100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(5vw, -5vh) scale(1.1); }
+    100% { transform: translate(-3vw, 4vh) scale(0.9); }
+}
+
+@keyframes floatGlow2 {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-5vw, 5vh) scale(1.1); }
+    100% { transform: translate(3vw, -4vh) scale(0.9); }
+}
+
+/* --- TERMINAL MODE INTEGRATION --- */
+body.terminal-mode-active .ambient-glows {
+    opacity: 0.2;
+}
+
+body.terminal-mode-active .particle-canvas {
+    opacity: 0.3;
+}
+
+body.terminal-mode-active .bg-system::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 4px, 3px 100%;
+    pointer-events: none;
 }
 
 /* --- VIEW CONTAINERS & TOGGLE --- */
