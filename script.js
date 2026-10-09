@@ -75,11 +75,23 @@ window.addEventListener('scroll', () => {
 
 // Copy Email Logic
 if (copyEmailBtn) {
+    const iconEl = copyEmailBtn.querySelector('i');
+    const textEl = copyEmailBtn.querySelector('span');
+    const originalIcon = iconEl.className;
+    const originalText = textEl.textContent;
+    
     copyEmailBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(EMAIL_ADDRESS).then(() => {
-            copyTooltip.classList.add('show');
+            iconEl.className = 'fas fa-check-circle';
+            iconEl.style.color = 'var(--c-green)';
+            textEl.textContent = 'Copied to clipboard!';
+            copyEmailBtn.style.borderColor = 'var(--c-green)';
+            
             setTimeout(() => {
-                copyTooltip.classList.remove('show');
+                iconEl.className = originalIcon;
+                iconEl.style.color = '';
+                textEl.textContent = originalText;
+                copyEmailBtn.style.borderColor = '';
             }, 2000);
         });
     });
@@ -427,7 +439,8 @@ class Particle {
 
 function initParticles() {
     particles = [];
-    const particleCount = Math.min(window.innerWidth / 30, 50); // Scale with screen size
+    const isMobile = window.innerWidth < 768;
+    const particleCount = isMobile ? Math.floor(Math.random() * 6 + 20) : Math.floor(Math.random() * 6 + 45);
     for (let i = 0; i < particleCount; i++) {
         particles.push(new Particle());
     }
@@ -465,7 +478,11 @@ function animateParticles() {
 // Prefers reduced motion check
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 if (!prefersReducedMotion.matches) {
-    window.addEventListener('resize', resizeCanvas);
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(resizeCanvas, 250);
+    });
     resizeCanvas();
     animateParticles();
 }
